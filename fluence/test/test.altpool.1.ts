@@ -67,5 +67,11 @@ const db = new Hyperbee(core, {
     const res = await registerPeer(BUNDLER_ID)
     console.log(res)
 
+    setInterval(async () => {
+        for await (const { key, value } of db.createReadStream()) {
+            console.log(value)
+        }
+    }, 2000)
+
     console.log('connected', Fluence.getStatus().peerId)
 })("12D3KooWJdoDgBh9t5bxvCW6E9cErensp33NN8Vc1GRKhPi2JNhs")
