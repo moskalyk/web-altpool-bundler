@@ -1,0 +1,33 @@
+import "@fluencelabs/aqua-lib/builtin.aqua"
+
+data UserOperation:
+    address: string
+    nonce: i64
+
+service Bundler("Bundler"):
+    peers() -> []PeerId
+    register(peer_id: PeerId) -> bool
+
+service AltPool("AltPool"):
+    write(peer_id: PeerId, user_op: UserOperation, client: bool) -> bool
+    read() -> []UserOperation
+
+func registerPeer(bundler_peer_id: PeerId) -> bool:
+    on bundler_peer_id:
+        res <- Bundler.register(%init_peer_id%)
+    <- res
+
+func getPeers(bundler_peer_id: PeerId) -> []PeerId:
+    on bundler_peer_id:
+        res <- Bundler.peers()
+    <- res
+
+func writeToPool(user_op: UserOperation, peer_id: PeerId, client: bool) -> bool:
+    on peer_id:
+        res <- AltPool.write(peer_id, user_op, client)
+    <- res
+
+func readPool(peer_id: PeerId) -> []UserOperation:
+    on peer_id:
+        res <- AltPool.read()
+    <- res
